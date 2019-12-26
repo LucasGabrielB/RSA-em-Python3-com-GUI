@@ -5,25 +5,25 @@ import sys
 # try-except para evitar erros de importacao dos modulos
 try:
     import Tkinter as tk
+
 except ImportError:
     import tkinter as tk
 
 try:
-    import ttk
-
-    py3 = False
-except ImportError:
     import tkinter.ttk as ttk
 
-    py3 = True
+except ImportError:
+    sys.exit('Erro: Erro ao importar o modulo "tkinter", verifique o mesmo e tente novamente.')
 
 try:
     from gerar_novas_chaves import *
+
 except ImportError:
     sys.exit('Erro: Erro ao importar o arquivo "gerar_novas_chaves.py", verifique o arquivo e tente novamente.')
           
 try:
-    from criptografia import *
+    import criptografia
+
 except ImportError:
     sys.exit('Erro: Erro ao importar o arquivo "criptografia.py", verifique o arquivo e tente novamente.')
 
@@ -44,15 +44,12 @@ def vp_start_gui():
     
 
 w = None
-
-
 def create_Toplevel1(root, *args, **kwargs):
     # funcao para quando o modulo é importado
     global w, w_win, rt
     rt = root
     w = tk.Toplevel(root)
     top = Toplevel1(w)
-    interface_support.init(w, top, *args, **kwargs)
     return (w, top)
 
 
@@ -73,8 +70,10 @@ class Toplevel1:
         font9 = '-family {Segoe UI} -size 9 -weight bold -slant roman ' \
                 '-underline 0 -overstrike 0'
         self.style = ttk.Style()
+
         if sys.platform == 'win32':
             self.style.theme_use('winnative')
+
         self.style.configure('.', background=_bgcolor)
         self.style.configure('.', foreground=_fgcolor)
         self.style.configure('.', font='TkDefaultFont')
@@ -99,8 +98,7 @@ class Toplevel1:
         self.TNotebook.configure(takefocus='')
         self.TNotebook_t0 = tk.Frame(self.TNotebook)
         self.TNotebook.add(self.TNotebook_t0, padding=3)
-        self.TNotebook.tab(0, text='Criptografia', compound='left', underline='-1'
-                           , )
+        self.TNotebook.tab(0, text='Criptografia', compound='left', underline='-1',)
         self.TNotebook_t0.configure(background='#d9d9d9')
         self.TNotebook_t0.configure(highlightbackground='#d8d8d8')
         self.TNotebook_t0.configure(highlightcolor='black')
@@ -130,11 +128,12 @@ class Toplevel1:
             self.TextResultado.delete('1.0', tk.END)
 
             # envia a mensagem para a funcao de criptografar, retorna a mensagem criptografada
-            criptografado = Criptografia.criptografar(mensagem, chavePublicaArquivo, textoCriptografadoArquivo)
+            criptografado = criptografia.criptografar(mensagem, chavePublicaArquivo, textoCriptografadoArquivo)
 
             # verifica se deu erro durante o processo de criptografia e retorna o erro se tiver, se nao retorna a mensagem padrao de confirmacao da criptografia
             if 'Erro:' in criptografado:
                 saida = criptografado
+            
             else:
                 saida = f'Texto criptografado com sucesso. Salvo no arquivo "{textoCriptografadoArquivo}".\nTexto criptografado = {str(criptografado)}'
 
@@ -156,21 +155,21 @@ class Toplevel1:
             textoDescriptografadoArquivo = str(self.EntryNomeArquivoDescriptografia.get())
 
             # envia o nome do arquivo para a funcao de descriptografar, retorna a mensagem descriptografada
-            descriptografado = Criptografia.descriptografar(arquivo, chavePrivadaArquivo, textoDescriptografadoArquivo)
+            descriptografado = criptografia.descriptografar(arquivo, chavePrivadaArquivo, textoDescriptografadoArquivo)
 
             # verifica se deu erro durante o processo de descriptografia e retorna o erro se tiver, se nao retorna a mensagem padrao de confirmacao da descriptografia
             if 'Erro:' in descriptografado:
                 saida = descriptografado
+            
             else:
-                saida = f'Texto descriptografado apartir do arquivo "{arquivo}". \nTexto descriptografado salvo no arquivo "{textoDescriptografadoArquivo}". \nTexto descriptografado = {descriptografado}'            
+                saida = f'Texto descriptografado apartir do arquivo "{arquivo}"\nTexto descriptografado salvo no arquivo "{textoDescriptografadoArquivo}".\nTexto descriptografado = {descriptografado}'            
 
             # imprime o texto descriptografado
             self.ScrolledtextDescriptografia.insert('1.0', saida)
 
         # configuracoes do botao de criptografar
         self.ButtonCriptografar = tk.Button(self.TFrameCriptografar)
-        self.ButtonCriptografar.place(relx=0.015, rely=0.057, height=44
-                                      , width=137)
+        self.ButtonCriptografar.place(relx=0.015, rely=0.057, height=44, width=137)
         self.ButtonCriptografar.configure(activebackground='#ececec')
         self.ButtonCriptografar.configure(activeforeground='#000000')
         self.ButtonCriptografar.configure(background='#00b783')
@@ -185,8 +184,7 @@ class Toplevel1:
 
         # configuracoes da entrada de texto da criptografia
         self.ScrolledentryCriptografia = ScrolledEntry(self.TFrameCriptografar)
-        self.ScrolledentryCriptografia.place(relx=0.237, rely=0.286, height=56
-                                             , relwidth=0.747)
+        self.ScrolledentryCriptografia.place(relx=0.237, rely=0.286, height=56, relwidth=0.747)
         self.ScrolledentryCriptografia.configure(background='white')
         self.ScrolledentryCriptografia.configure(disabledforeground='#a3a3a3')
         self.ScrolledentryCriptografia.configure(foreground='black')
@@ -199,8 +197,7 @@ class Toplevel1:
 
         # configuracoes da entrada do nome do arquivo criptografado
         self.LabelNomeArquivoCriptografia = tk.Label(self.TFrameCriptografar)
-        self.LabelNomeArquivoCriptografia.place(relx=0.244, rely=0.057, height=21
-                                                , width=185)
+        self.LabelNomeArquivoCriptografia.place(relx=0.244, rely=0.057, height=21, width=185)
         self.LabelNomeArquivoCriptografia.configure(activebackground='#f9f9f9')
         self.LabelNomeArquivoCriptografia.configure(activeforeground='black')
         self.LabelNomeArquivoCriptografia.configure(background='#d9d9d9')
@@ -212,8 +209,7 @@ class Toplevel1:
         self.LabelNomeArquivoCriptografia.configure(text='Nome do arquivo criptografado:')
 
         self.EntryNomeArquivoCriptografia = tk.Entry(self.TFrameCriptografar)
-        self.EntryNomeArquivoCriptografia.place(relx=0.525, rely=0.057, height=20
-                                                , relwidth=0.457)
+        self.EntryNomeArquivoCriptografia.place(relx=0.525, rely=0.057, height=20, relwidth=0.457)
         self.EntryNomeArquivoCriptografia.configure(background='white')
         self.EntryNomeArquivoCriptografia.configure(disabledforeground='#a3a3a3')
         self.EntryNomeArquivoCriptografia.configure(font='TkFixedFont')
@@ -235,8 +231,7 @@ class Toplevel1:
         self.LabelResultado.configure(text='Resultado:')
 
         self.TextResultado = tk.Text(self.TFrameCriptografar)
-        self.TextResultado.place(relx=0.237, rely=0.686, relheight=0.251
-                                 , relwidth=0.747)
+        self.TextResultado.place(relx=0.237, rely=0.686, relheight=0.251, relwidth=0.747)
         self.TextResultado.configure(background='white')
         self.TextResultado.configure(font='TkTextFont')
         self.TextResultado.configure(foreground='black')
@@ -250,16 +245,14 @@ class Toplevel1:
 
         # frame de descriptografar
         self.TFrameDescriptografar = ttk.Frame(self.TNotebook_t0)
-        self.TFrameDescriptografar.place(relx=0.014, rely=0.478, relheight=0.443
-                                         , relwidth=0.94)
+        self.TFrameDescriptografar.place(relx=0.014, rely=0.478, relheight=0.443, relwidth=0.94)
         self.TFrameDescriptografar.configure(relief='groove')
         self.TFrameDescriptografar.configure(borderwidth='2')
         self.TFrameDescriptografar.configure(relief='groove')
 
         # configuracoes do botao de descriptografar
         self.ButtonDescriptografar = tk.Button(self.TFrameDescriptografar)
-        self.ButtonDescriptografar.place(relx=0.015, rely=0.054, height=44
-                                         , width=137)
+        self.ButtonDescriptografar.place(relx=0.015, rely=0.054, height=44, width=137)
         self.ButtonDescriptografar.configure(activebackground='#ececec')
         self.ButtonDescriptografar.configure(activeforeground='#000000')
         self.ButtonDescriptografar.configure(background='#00b783')
@@ -274,8 +267,7 @@ class Toplevel1:
 
         # configuracoes da entrada do nome do arquivo descriptografado
         self.TLabelNomeArquivoDesciptografia = ttk.Label(self.TFrameDescriptografar)
-        self.TLabelNomeArquivoDesciptografia.place(relx=0.244, rely=0.027
-                                                   , height=29, width=176)
+        self.TLabelNomeArquivoDesciptografia.place(relx=0.244, rely=0.027, height=29, width=176)
         self.TLabelNomeArquivoDesciptografia.configure(background='#d9d9d9')
         self.TLabelNomeArquivoDesciptografia.configure(foreground='#000000')
         self.TLabelNomeArquivoDesciptografia.configure(font='-family {Segoe UI} -size 9 -weight bold')
@@ -283,8 +275,7 @@ class Toplevel1:
         self.TLabelNomeArquivoDesciptografia.configure(text='Nome do arquivo normal:')
 
         self.EntryNomeArquivoDescriptografia = tk.Entry(self.TFrameDescriptografar)
-        self.EntryNomeArquivoDescriptografia.place(relx=0.467, rely=0.054
-                                                   , height=20, relwidth=0.51)
+        self.EntryNomeArquivoDescriptografia.place(relx=0.467, rely=0.054, height=20, relwidth=0.51)
         self.EntryNomeArquivoDescriptografia.configure(background='white')
         self.EntryNomeArquivoDescriptografia.configure(disabledforeground='#a3a3a3')
         self.EntryNomeArquivoDescriptografia.configure(font='TkFixedFont')
@@ -298,8 +289,7 @@ class Toplevel1:
 
         # configuracoes da saida da descriptografia
         self.ScrolledtextDescriptografia = ScrolledText(self.TFrameDescriptografar)
-        self.ScrolledtextDescriptografia.place(relx=0.237, rely=0.324
-                                               , relheight=0.6, relwidth=0.742)
+        self.ScrolledtextDescriptografia.place(relx=0.237, rely=0.324, relheight=0.6, relwidth=0.742)
         self.ScrolledtextDescriptografia.configure(background='white')
         self.ScrolledtextDescriptografia.configure(font='TkTextFont')
         self.ScrolledtextDescriptografia.configure(foreground='black')
@@ -313,8 +303,7 @@ class Toplevel1:
 
         # frame informativo das chaves
         self.FrameChaves = tk.Frame(self.TNotebook_t1)
-        self.FrameChaves.place(relx=0.014, rely=0.024, relheight=0.801
-                               , relwidth=0.968)
+        self.FrameChaves.place(relx=0.014, rely=0.024, relheight=0.801, relwidth=0.968)
         self.FrameChaves.configure(relief='groove')
         self.FrameChaves.configure(borderwidth='2')
         self.FrameChaves.configure(relief='groove')
@@ -329,13 +318,13 @@ class Toplevel1:
 
             # formata o texto de saida da chave publica para melhor visualizacao
             chavePublica = f'Chave E = {int(chavePublica[0])}\n\nChave N = {int(chavePublica[1])}'
+        
         except IOError:
             chavePublica = 'Arquivo contendo as chaves publicas não encontrado.'
             
         # configuracoes da saida da chave publica
         self.ScrolledtextChavePublica = ScrolledText(self.FrameChaves)
-        self.ScrolledtextChavePublica.place(relx=0.022, rely=0.119
-                                            , relheight=0.839, relwidth=0.447)
+        self.ScrolledtextChavePublica.place(relx=0.022, rely=0.119, relheight=0.839, relwidth=0.447)
         self.ScrolledtextChavePublica.configure(background='white')
         self.ScrolledtextChavePublica.configure(font='TkTextFont')
         self.ScrolledtextChavePublica.configure(foreground='black')
@@ -350,8 +339,7 @@ class Toplevel1:
         self.ScrolledtextChavePublica.configure(state='disabled')
 
         self.TLabelChavePublica = ttk.Label(self.FrameChaves)
-        self.TLabelChavePublica.place(relx=0.022, rely=0.03, height=19
-                                      , width=306)
+        self.TLabelChavePublica.place(relx=0.022, rely=0.03, height=19, width=306)
         self.TLabelChavePublica.configure(background='#d9d9d9')
         self.TLabelChavePublica.configure(foreground='#000000')
         self.TLabelChavePublica.configure(font='-family {Segoe UI} -size 9 -weight bold')
@@ -365,13 +353,13 @@ class Toplevel1:
 
             # formata o texto de saida da chave privada para melhor visualizacao
             chavePrivada = f'Chave D = {int(chavePrivada[0])}\n\nChave N = {int(chavePrivada[1])}'
+
         except IOError:
             chavePrivada = 'Arquivo contendo as chaves privadas não encontrado.'
 
         # configuracoes da saida da chave privada
         self.ScrolledtextChavePrivada = ScrolledText(self.FrameChaves)
-        self.ScrolledtextChavePrivada.place(relx=0.496, rely=0.119
-                                            , relheight=0.839, relwidth=0.476)
+        self.ScrolledtextChavePrivada.place(relx=0.496, rely=0.119, relheight=0.839, relwidth=0.476)
         self.ScrolledtextChavePrivada.configure(background='white')
         self.ScrolledtextChavePrivada.configure(font='TkTextFont')
         self.ScrolledtextChavePrivada.configure(foreground='black')
@@ -386,8 +374,7 @@ class Toplevel1:
         self.ScrolledtextChavePrivada.configure(state='disabled')
 
         self.TLabelChavePrivada = ttk.Label(self.FrameChaves)
-        self.TLabelChavePrivada.place(relx=0.49511, rely=0.03, height=19
-                                      , width=316)
+        self.TLabelChavePrivada.place(relx=0.49511, rely=0.03, height=19, width=316)
         self.TLabelChavePrivada.configure(background='#d9d9d9')
         self.TLabelChavePrivada.configure(foreground='#000000')
         self.TLabelChavePrivada.configure(font='-family {Segoe UI} -size 9 -weight bold')
@@ -426,8 +413,7 @@ class Toplevel1:
 
         # configuracoes do botao de geracao de novas chaves
         self.ButtonGerarNovasChaves = tk.Button(self.TNotebook_t1)
-        self.ButtonGerarNovasChaves.place(relx=0.014, rely=0.861, height=34
-                                          , width=127)
+        self.ButtonGerarNovasChaves.place(relx=0.014, rely=0.861, height=34, width=127)
         self.ButtonGerarNovasChaves.configure(activebackground='#ececec')
         self.ButtonGerarNovasChaves.configure(activeforeground='#000000')
         self.ButtonGerarNovasChaves.configure(background='#DB4A39')  ##d9d9d9
@@ -451,31 +437,30 @@ class AutoScroll(object):
             vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
             pass
+
         hsb = ttk.Scrollbar(master, orient='horizontal', command=self.xview)
 
         try:
             self.configure(yscrollcommand=self._autoscroll(vsb))
         except:
             pass
+
         self.configure(xscrollcommand=self._autoscroll(hsb))
 
         self.grid(column=0, row=0, sticky='nsew')
+
         try:
             vsb.grid(column=1, row=0, sticky='ns')
         except:
             pass
-        hsb.grid(column=0, row=1, sticky='ew')
 
+        hsb.grid(column=0, row=1, sticky='ew')
         master.grid_columnconfigure(0, weight=1)
         master.grid_rowconfigure(0, weight=1)
 
-        # copiar os metodos da geometria do mestre master (pega de ScrolledText.py)
-        if py3:
-            methods = tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() \
+        # copiar os metodos da geometria do master (pega de ScrolledText.py)
+        methods = tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() \
                       | tk.Place.__dict__.keys()
-        else:
-            methods = tk.Pack.__dict__.keys() + tk.Grid.__dict__.keys() \
-                      + tk.Place.__dict__.keys()
 
         for meth in methods:
             if meth[0] != '_' and meth not in ('config', 'configure'):
@@ -487,10 +472,13 @@ class AutoScroll(object):
 
         def wrapped(first, last):
             first, last = float(first), float(last)
+            
             if first <= 0 and last >= 1:
                 sbar.grid_remove()
+            
             else:
                 sbar.grid()
+            
             sbar.set(first, last)
 
         return wrapped
@@ -540,6 +528,7 @@ def _bound_to_mousewheel(event, widget):
     if platform.system() == 'Windows' or platform.system() == 'Darwin':
         child.bind_all('<MouseWheel>', lambda e: _on_mousewheel(e, child))
         child.bind_all('<Shift-MouseWheel>', lambda e: _on_shiftmouse(e, child))
+    
     else:
         child.bind_all('<Button-4>', lambda e: _on_mousewheel(e, child))
         child.bind_all('<Button-5>', lambda e: _on_mousewheel(e, child))
@@ -551,6 +540,7 @@ def _unbound_to_mousewheel(event, widget):
     if platform.system() == 'Windows' or platform.system() == 'Darwin':
         widget.unbind_all('<MouseWheel>')
         widget.unbind_all('<Shift-MouseWheel>')
+    
     else:
         widget.unbind_all('<Button-4>')
         widget.unbind_all('<Button-5>')
@@ -562,13 +552,17 @@ def _on_mousewheel(event, widget):
     try:
         if platform.system() == 'Windows':
             widget.yview_scroll(-1 * int(event.delta / 120), 'units')
+       
         elif platform.system() == 'Darwin':
             widget.yview_scroll(-1 * int(event.delta), 'units')
+       
         else:
             if event.num == 4:
                 widget.yview_scroll(-1, 'units')
+       
             elif event.num == 5:
                 widget.yview_scroll(1, 'units')
+    
     except AttributeError:
         pass
 
@@ -576,11 +570,14 @@ def _on_mousewheel(event, widget):
 def _on_shiftmouse(event, widget):
     if platform.system() == 'Windows':
         widget.xview_scroll(-1 * int(event.delta / 120), 'units')
+    
     elif platform.system() == 'Darwin':
         widget.xview_scroll(-1 * int(event.delta), 'units')
+    
     else:
         if event.num == 4:
             widget.xview_scroll(-1, 'units')
+    
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
