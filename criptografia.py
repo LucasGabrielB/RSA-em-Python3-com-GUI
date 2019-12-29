@@ -32,10 +32,11 @@ def criptografar(mensagemRecebida, chavePublicaArquivo, nomeArquivoTextoCriptogr
     for c in mensagemRecebida:
         mensagemCifrada += f'{((ord(c) ** chaveE) % chaveN)}.'
 
+    # converte a msg cifrada para base64, depois string
     # remove o ultimo "." para evitar erros futuros
-    mensagemCifrada = mensagemCifrada[:-1]
+    mensagemCifrada = b64encode(mensagemCifrada[:-1].encode()).decode()
 
-    # escreve a mensagem criptografada em um arquivo
+    # salva a mensagem criptografada em um arquivo
     # se o nome do informado do arquivo estiver vazio retorna uma mensagem de erro
     try:
         with open(str(nomeArquivoTextoCriptografado).strip(), 'w') as arquivo:
@@ -53,10 +54,12 @@ def descriptografar(arquivoCriptografado, chavePrivadaArquivo, nomeArquivoTextoD
 
     chaveD, chaveN = abrirArquivoDeChaves(chavePrivadaArquivo)
 
-    # le o arquivo a ser descriptografado e retorna uma mensagem de erro se nao o encontrar
+    # le o arquivo a ser descriptografado. retorna uma mensagem de erro se nao o encontrar
     try:
         with open(str(arquivoCriptografado), 'r') as f:
-            dadosCriptografados = f.read().split('.')
+            dadosCriptografados = f.read()
+            # converte os dados de base64 de volta ao normal
+            dadosCriptografados = b64decode(dadosCriptografados.encode()).decode().split('.')
     
     except IOError:
         return 'Erro: Arquivo inválida/não encontrado.'
