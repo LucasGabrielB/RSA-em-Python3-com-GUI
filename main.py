@@ -16,7 +16,7 @@ except ImportError:
     sys.exit('Erro: Erro ao importar o modulo "tkinter", verifique o mesmo e tente novamente.')
 
 try:
-    from gerar_novas_chaves import *
+    from generate_new_RSA_keys import generate_new_keys
 
 except ImportError:
     sys.exit('Erro: Erro ao importar o arquivo "gerar_novas_chaves.py", verifique o arquivo e tente novamente.')
