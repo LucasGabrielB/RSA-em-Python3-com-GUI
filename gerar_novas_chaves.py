@@ -1,74 +1,79 @@
 # Author: Lucas Gabriel
 
 from random import randint
+from math import floor, sqrt
 
-# funcao para gerar um numero primo aleatório
-def gerarPrimoAleatorio(limite=0):
-
-    eprimo = False
-
-    # enquanto o numero gerado aleatoriamente não for primo fica no loop
-    while eprimo == False:
-
-        divisores = 0
-        numero = randint(3, limite) # gera um numero aleatorio de 0 ate o limite informado
-
-        # verifica quantos divisores um numero tem 
-        for divisor in range(1, numero+1):
-            if numero % divisor == 0:
-                divisores += 1
-
-        # se o numero de divisores for apenas 2 significa que é um numero primo 
-        if divisores == 2:
-            eprimo = True
-
-    return numero # retorna o numero
+def is_prime(n):
+	''' return "True" if "n" is a prime number else return "False" '''
+	if n % 2 == 0:
+		return False
+	
+	max_divisor = floor(sqrt(n))
+	
+	for d in range(3, max_divisor + 1, 2):
+		if n % d == 0:
+			return False
+	
+	return True
 
 
-# funcao para achar o inverso multiplicativo
-def inversorModular(a, m): 
-    a = a % m 
+def generate_random_prime(limite: int):
+	''' return a random prime number from 3 up to the "limite" '''
 
-    for x in range(1, m): 
-        if ((a * x) % m == 1): 
-            return x 
+	is_a_prime_number = False
 
-    return 1
+	while is_a_prime_number == False:
 
+		number = randint(3, limite) # returns a random number between 3 and "limite"
+		is_a_prime_number = is_prime(number) # verify if is a prime number
 
-# funcao para achar o MDC de dois numeros (algoritmo de Euclides)
-def mdc(x, y):      
-    while(y): 
-        x, y = y, x % y 
-      
-    return x
+	return number
 
 
-# funcao para gerar novas chaves
-def gerar_novas_chaves():
+def modular_inverse(a, m):
+	''' returns the modular inverse of "a" and "b" '''
+	a = a % m 
 
-    # gera um numero aleatorio para P e Q dentro do limite informado
-    p = gerarPrimoAleatorio(500)
-    q = gerarPrimoAleatorio(500)
+	for x in range(1, m): 
+		if ((a * x) % m == 1): 
+			return x 
 
-    # define o produto de P e Q
-    n = p * q
+	return 1
 
-    # função totiente em N, chamaremos de M
-    m = (p-1) * (q-1)
 
-    # define e, tal que, [1 > E > M] de forma que E e M sejam primos entre si
-    e = 3
-    while mdc(m, e) > 1:
-        e += 2
+def mdc(x, y):
+	''' returns the greatest common divisor of two numbers, "x" and "y" '''
+	while(y): 
+		x, y = y, x % y 
 
-    # define D, tau  que, D seja o inverso multiplicativo de E e M
-    d = inversorModular(e, m)
+	return x
 
-    # guardando as novas chaves privadas em um arquivo .pem para salva-las
-    with open('chave_privada.pem', 'w') as arquivo:
-        arquivo.write(f'{d} {n}')
 
-    # guardando as novas chaves publicas em um arquivo .pem para salva-las
-    with open('chave_publica.pem', 'w') as arquivo:
-        arquivo.write(f'{e} {n}')
+def generate_new_keys():
+	''' generate a RSA keypar and save then in they respective files '''
+
+	# choose two distinct prime numbers p and q
+	p = generate_random_prime(500)
+	q = generate_random_prime(500)
+
+	# compute n = pq
+	n = p * q
+
+	# compute M, where M is carmichael's totient function
+	m = (p-1) * (q-1)
+
+	# choose an integer e such that, [1 > E > M], that is, E and M are coprime
+	e = 3
+	while mdc(m, e) > 1:
+		e += 2
+
+	# determine D, D is the modular multiplicative inverse of E modulo M
+	d = modular_inverse(e, m)
+
+	# save private key in a file
+	with open('chave_privada.pem', 'w') as arquivo:
+		arquivo.write(f'{d} {n}')
+
+	# save public key in a file
+	with open('chave_publica.pem', 'w') as arquivo:
+		arquivo.write(f'{e} {n}')
