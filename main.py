@@ -22,7 +22,7 @@ except ImportError:
     sys.exit('Erro: Erro ao importar o arquivo "gerar_novas_chaves.py", verifique o arquivo e tente novamente.')
           
 try:
-    import criptografia
+    import criptography_RSA
 
 except ImportError:
     sys.exit('Erro: Erro ao importar o arquivo "criptografia.py", verifique o arquivo e tente novamente.')
@@ -128,7 +128,7 @@ class Toplevel1:
             self.TextResultado.delete('1.0', tk.END)
 
             # envia a mensagem para a funcao de criptografar, retorna a mensagem criptografada
-            criptografado = criptografia.criptografar(mensagem, chavePublicaArquivo, textoCriptografadoArquivo)
+            criptografado = criptography_RSA.encrypt_text(mensagem, chavePublicaArquivo, textoCriptografadoArquivo)
 
             # verifica se deu erro durante o processo de criptografia e retorna o erro se tiver, se nao retorna a mensagem padrao de confirmacao da criptografia
             if 'Erro:' in criptografado:
@@ -155,7 +155,7 @@ class Toplevel1:
             textoDescriptografadoArquivo = str(self.EntryNomeArquivoDescriptografia.get())
 
             # envia o nome do arquivo para a funcao de descriptografar, retorna a mensagem descriptografada
-            descriptografado = criptografia.descriptografar(arquivo, chavePrivadaArquivo, textoDescriptografadoArquivo)
+            descriptografado = criptography_RSA.decrypt_text(arquivo, chavePrivadaArquivo, textoDescriptografadoArquivo)
 
             # verifica se deu erro durante o processo de descriptografia e retorna o erro se tiver, se nao retorna a mensagem padrao de confirmacao da descriptografia
             if 'Erro:' in descriptografado:
@@ -383,7 +383,7 @@ class Toplevel1:
 
         def btgerar_novas_chaves_click():  # funcao para gerar novas chaves aleatorias
 
-            gerar_novas_chaves()  # chava a funcao que gera novos arquivos contendo as chaves
+            generate_new_keys()  # chava a funcao que gera novos arquivos contendo as chaves
 
             # le o arquivo da chave publica
             with open(chavePublicaArquivo, 'rb') as chavepba:

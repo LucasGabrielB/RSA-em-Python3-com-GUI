@@ -1,98 +1,83 @@
 # Author: Lucas Gabriel
 
-# importa a biblioteca que faz a conversar para base64 e vice versa
 from base64 import b64encode, b64decode
 
-# funcao para ler o arquivo das chaves. retorna uma mensagem de erro se nao o encontrar o arquivo
-def abrirArquivoDeChaves(arquivo):
+def open_keys_file(file_name):
+    ''' function to open a key type file and returns the keys'''
     try:
-        with open(arquivo, 'r') as f:
-            chave1, chave2 = f.read().split()
-            return int(chave1), int(chave2)
-    
+        with open(file_name, 'r') as f:
+            key1, key2 = f.read().split()
+            return int(key1), int(key2)    
     except IOError:
-        return 'Erro: Chave inválida/Não encontrada.'
+        raise Exception('Error: Chave inválida/Não encontrada.')
 
 
-# funcao para criptografar a mensagem
-def criptografar(mensagemRecebida, chavePublicaArquivo, nomeArquivoTextoCriptografado):
+def encrypt_text(original_message, public_key_file, encrypted_message_save_file):
+    ''' function to encrypt a message
+    return the encrypt text and save in a file '''
 
-    if mensagemRecebida == '':
-        return 'Erro: Digite o texto para ser criptografado.'
+    if original_message == '':
+        raise Exception('Error: Digite o texto para ser criptografado.')
         
-    # le o arquivo das chaves publicas e retorna uma mensagem de erro se nao o encontrar
-    chaveE, chaveN = abrirArquivoDeChaves(chavePublicaArquivo)
+    key_e, key_n = open_keys_file(public_key_file)
 
-    # converte a mensagem recebida para base64 e depois para string, para pode cifrar
-    mensagemRecebida = b64encode(mensagemRecebida.encode()).decode()
+    # convert the original message to base64
+    encode_message = b64encode(original_message.encode()).decode()
     
-    # criptografa o texto usando as chaves publicas
-    mensagemCifrada = ''
-    
-    for c in mensagemRecebida:
-        mensagemCifrada += f'{((ord(c) ** chaveE) % chaveN)}.'
+    # encrypting text
+    encrypted_message = ''
+    for char in encode_message:
+        encrypted_message += f'{((ord(char) ** key_e) % key_n)}.'
 
-    # converte a msg cifrada para base64, depois string
-    # remove o ultimo "." para evitar erros futuros
-    mensagemCifrada = b64encode(mensagemCifrada[:-1].encode()).decode()
+    # remove the last "." and convert the encrypted message to base64
+    encrypted_message = b64encode(encrypted_message[:-1].encode()).decode()
 
-    # salva a mensagem criptografada em um arquivo
-    # se o nome do informado do arquivo estiver vazio retorna uma mensagem de erro
+    # save the encrypted message to a file
     try:
-        with open(str(nomeArquivoTextoCriptografado).strip(), 'w') as arquivo:
-            arquivo.write(mensagemCifrada)
-    
+        with open(str(encrypted_message_save_file).strip(), 'w') as file:
+            file.write(encrypted_message)  
     except IOError:
-        return 'Erro: Digite o nome do arquivo aonde deseja salvar o arquivo criptografado.'
+        raise Exception('Error: Digite o nome do arquivo aonde deseja salvar o arquivo criptografado.')
     
-    # retorna a mensagem cifrada
-    return  mensagemCifrada
+    return encrypted_message
 
 
-# funcao para descriptografar a mensagem
-def descriptografar(arquivoCriptografado, chavePrivadaArquivo, nomeArquivoTextoDescriptografado):
+def decrypt_text(encrypted_text_file, private_key_file, decrypted_message_save_file):
+    ''' function to decrypt a message 
+    return return the decrypt text and save in a file '''
 
-    chaveD, chaveN = abrirArquivoDeChaves(chavePrivadaArquivo)
+    key_d, key_n = open_keys_file(private_key_file)
 
-    # le o arquivo a ser descriptografado. retorna uma mensagem de erro se nao o encontrar
     try:
-        with open(str(arquivoCriptografado), 'r') as f:
-            dadosCriptografados = f.read()
-            # converte os dados de base64 de volta ao normal
-            dadosCriptografados = b64decode(dadosCriptografados.encode()).decode().split('.')
-    
+        with open(str(encrypted_text_file), 'r') as file:
+            encrypted_data = file.read()
+            
+            # get the encrypted data from the string save in the file
+            encrypted_data = b64decode(encrypted_data.encode()).decode().split('.')   
     except IOError:
-        return 'Erro: Arquivo inválida/não encontrado.'
+        raise Exception('Error: Arquivo inválida/não encontrado.')
 
-    # descriptografando os dados criptografados do arquivo e pegando o texto descriptografado
-    textoDescriptografado = ''
+    # decrypt data and get the plain text
+    decrypted_message = ''
+    for char in encrypted_data:
+        decrypted_message += chr((int(char) ** key_d) % key_n)
     
-    for c in dadosCriptografados:
-        textoDescriptografado += chr((int(c) ** chaveD) % chaveN)
-    
-    # converte a mensagem descriptografada de base64 de volta ao normal e depois para string
-    # se ocorer um erro na decodificacao retorna uma mensagem informando um erro no conjunto de chaves
+    # decode the decrypted message from base64 back to normal
     try:
-        textoDescriptografado = b64decode(textoDescriptografado.encode()).decode()
-    
+        decrypted_message = b64decode(decrypted_message.encode()).decode()
     except:
-        return 'Erro: Chaves privadas incorretas.'
+        raise Exception('Error: Chaves privadas incorretas.')
         
-    # tenta escrever o texto descriptografado em um arquivo, caso de erro na decodificação ou
-    # se o nome do arquivo ou o texto descriptografado estiver vazio retorna uma mensagem de erro
+    # save the decrypted message in a file
     try:
-        if str(textoDescriptografado) != '':
-            with open(str(nomeArquivoTextoDescriptografado).strip(), 'w') as arquivo:
-                arquivo.write(textoDescriptografado)
+        if str(decrypted_message) != '':
+            with open(str(decrypted_message_save_file).strip(), 'w') as file:
+                file.write(decrypted_message)
         
         else:
-            return 'Erro: Chaves privadas incorretas.'
+            raise Exception('Error: Chaves privadas incorretas.')
     
     except UnicodeError:
-        return 'Erro: Chaves privadas incorretas.'
-    
-    except IOError:
-        return 'Erro: Digite o nome do arquivo aonde deseja salvar o texto descriptografado.'
-        
-    # retorna a mensagem descriptografada
-    return textoDescriptografado
+        raise Exception('Error: Chaves privadas incorretas.')
+
+    return decrypted_message
